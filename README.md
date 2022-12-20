@@ -1,2 +1,1 @@
-# HouseServer
-House Application Server
+# HouseAutomation
