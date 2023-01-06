@@ -1,7 +1,7 @@
 # socketClient.py
 import socket
 
-class Client:
+class Client():
 
     HOST = "192.168.0.2" # BMR Server
     PORT = 0
@@ -35,6 +35,9 @@ class Client:
             while not con:
                 con = self.connect()
             self.send(package)
+    
+    def recieve(self) -> str:
+        return self.s.recv()
 
     def checksum(self, package:list[str]) -> str:
         '''Create a checksum for package'''
