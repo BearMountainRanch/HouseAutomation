@@ -1,25 +1,24 @@
 # socketClient.py
 import socket
 
-class Client():
+class Server():
 
-    HOST = "192.168.0.2" # BMR Server
+    HOST = "" # BMR Server
     PORT = 50007
     BUFSIZE = 1024
 
     def __init__(self) -> None:
+        self.clients = []
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.connect()
+        self.s.bind((self.HOST, self.PORT))
+        self.s.listen(1)
+        self.accept()
 
-    def connect(self) -> bool:
+    def accept(self) -> bool:
         '''Connect to host server through port'''
-        try:
-            self.s.connect((self.HOST, self.PORT))
-            return True
-        except TimeoutError:
-            return False 
-        except InterruptedError:
-            return False
+        conn, addr = self.s.accept()
+        print('Connected by', addr)
+        self.clients.append(conn)
 
     def send(self, package) -> bool:
         '''Send package if connection exists'''

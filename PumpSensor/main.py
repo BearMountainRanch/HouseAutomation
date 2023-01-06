@@ -15,18 +15,14 @@ class State():
         self.ledState = False
         self.LED = Pin(self.LED_PIN, Pin.OUT)
         
-    def lightToggle(self) -> None:
-        if self.ledState:
-            self.LED.value(False)
-            self.ledState = False
-        else:
-            self.LED.value(True)
-            self.ledState = True
+    def lightToggle(self, data) -> None:
+        self.LED.value(data)
 
     def loop(self) -> None:
         '''Main program loop'''
         cnt = 0
         state = False
+        data = 0
         while cnt < 100:
             state = client.recieve()
             if state == None:
@@ -37,6 +33,14 @@ class State():
                 state = False
             cnt = cnt + 1
             self.lightToggle(state)
+
+            if cnt % 10 == 0:
+                if data == 0:
+                    client.send(b'1')
+                    data = 1
+                elif data == 1:
+                    client.send(b'0')
+                    data = 0
 
     def connect(self) -> None:
         '''Connect to WLAN'''
