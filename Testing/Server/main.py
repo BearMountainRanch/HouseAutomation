@@ -23,6 +23,7 @@ class State():
         state = 0
         while cnt < 100:
             server.accept()
+            print(server.clients)
             if not server.clients:
                 print('No clinets')
                 sleep(1)

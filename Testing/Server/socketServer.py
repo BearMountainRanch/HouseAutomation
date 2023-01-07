@@ -25,7 +25,7 @@ class Server():
         package = str(package)
         cksum = self.checksum(package)
 
-        self.s.sendall(package)
+        self.clients[0].sendall(package)
 
         # try:
         #     self.s.sendall(package)
