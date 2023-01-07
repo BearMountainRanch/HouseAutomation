@@ -6,7 +6,7 @@ from socketClient import Client
 
 class State():
 
-    LED_PIN = 25
+    LED_PIN = "LED"
     SSID = 'Home'
     PWD = '9512783540'
 
