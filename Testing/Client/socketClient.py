@@ -3,7 +3,7 @@ import socket
 
 class Client():
 
-    HOST = "192.168.0.2" # BMR Server
+    HOST = "10.0.0.186"
     PORT = 50007
     BUFSIZE = 1024
 
