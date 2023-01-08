@@ -7,8 +7,8 @@ from socketServer import Server
 class State():
 
     LED_PIN = "LED"
-    SSID = 'Home'
-    PWD = '9512783540'
+    SSID = 'UCSDFellas'
+    PWD = '420BlazeIt'
 
     def __init__(self) -> None:
         self.connect()
