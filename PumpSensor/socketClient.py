@@ -35,6 +35,7 @@ class Client():
             self.connect()
             return False
 
+    # WORKING ON THIS
     def send(self, msg) -> bool:
         '''Send msg to Server and check full msg was sent'''
         try:

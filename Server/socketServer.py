@@ -42,3 +42,13 @@ class Server():
             return client.recv(self.BUFFSIZE).decode('ascii')
         except:
             return None
+
+    # WORKING ON THIS
+    def send(self, client, msg) -> bool:
+        '''Send msg to Server and check full msg was sent'''
+        try:
+            byte = client.send(msg.encode('ascii'))
+            print("BYTE: ", byte)
+        except:
+            # Client no longer exists
+            return False
