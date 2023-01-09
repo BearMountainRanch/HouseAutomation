@@ -22,24 +22,21 @@ class State():
         cnt = 0
         state = 0
         while cnt < 100:
-            server.accept()
-            print(server.clients)
+            print("Clients: ", server.clients)
             if not server.clients:
                 print('No clinets')
                 sleep(1)
                 continue
             for client in server.clients:
-                with client:
-                    while True:
-                        data = client.recv(1024)
-                        data = repr(data)
-                        if data == 'None':
-                            break
-                        elif data == '1':
-                            data = True
-                        elif data == '0':
-                            data = False
-                        self.lightToggle(data)
+                data = client.recv(1024)
+                data = repr(data)
+                if data == 'None':
+                    break
+                elif data == '1':
+                    data = True
+                elif data == '0':
+                    data = False
+                self.lightToggle(data)
             
             if state == 0:
                 server.send(b'1')

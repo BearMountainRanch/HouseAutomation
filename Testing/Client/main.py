@@ -24,7 +24,18 @@ class State():
         state = False
         data = 0
         while cnt < 100:
+            if cnt % 10 == 0:
+                if data == 0:
+                    client.send(b'1')
+                    data = 1
+                elif data == 1:
+                    client.send(b'0')
+                    data = 0
+            
+            sleep(.5)
+            print("1")
             state = client.recieve()
+            print("2")
             if state == None:
                 continue
             elif state == 1:
@@ -34,13 +45,6 @@ class State():
             cnt = cnt + 1
             self.lightToggle(state)
 
-            if cnt % 10 == 0:
-                if data == 0:
-                    client.send(b'1')
-                    data = 1
-                elif data == 1:
-                    client.send(b'0')
-                    data = 0
 
     def connect(self) -> None:
         '''Connect to WLAN'''

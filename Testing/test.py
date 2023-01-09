@@ -1,18 +1,12 @@
-class sClass():
-    phrase = "hello"
+with open("test.txt", 'r') as test:
+    # msg1 = test.readline()
+    # msg2 = test.readline()
+    msg1, msg2 = test.read().split("\n")
 
-    def __enter__(q):
-        print('enter')
-    
-    def __exit__(a, b, c, d):
-        print('exit')
+# print("[", msg1, "]")
+# print("[", msg2, "]")
+print(msg1)
+print(msg2)
 
-s = sClass()
-
-with s:
-    print(s.phrase)
-
-w = 'hello'
-
-with w:
-    print(w)
+with open("test.txt", 'w') as test:
+    test.write("{}\n{}".format("World", "Hello"))

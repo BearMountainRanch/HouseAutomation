@@ -14,7 +14,7 @@ class Server():
         self.s.listen(1)
         self.accept()
 
-    def accept(self) -> bool:
+    def accept(self) -> None:
         '''Connect to host server through port'''
         conn, addr = self.s.accept()
         print('Connected by', addr)
@@ -26,6 +26,7 @@ class Server():
         cksum = self.checksum(package)
 
         self.clients[0].sendall(package)
+        print("Sent: ", package)
 
         # try:
         #     self.s.sendall(package)
@@ -39,7 +40,9 @@ class Server():
         #     self.send(package)
     
     def recieve(self) -> str:
-        return self.s.recv()
+        msg = self.s.recv()
+        print("Recv: ", msg)
+        return msg
 
     def checksum(self, package:list[str]) -> str:
         '''Create a checksum for package'''

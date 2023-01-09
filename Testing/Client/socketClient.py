@@ -27,6 +27,7 @@ class Client():
         cksum = self.checksum(package)
 
         self.s.sendall(package)
+        print("Sent: ", package)
 
         # try:
         #     self.s.sendall(package)
@@ -40,7 +41,9 @@ class Client():
         #     self.send(package)
     
     def recieve(self) -> str:
-        return self.s.recv(1024)
+        msg = self.s.recv(1024)
+        print("Recivied: ", msg)
+        return msg
 
     def checksum(self, package:list[str]) -> str:
         '''Create a checksum for package'''
