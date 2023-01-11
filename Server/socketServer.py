@@ -9,7 +9,7 @@ class Server():
     PORT = 50007
 
     def __init__(self) -> None:
-        self.clients = {}
+        self.clients = []
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.bind((self.HOST, self.PORT))
         self.s.listen()
@@ -19,32 +19,47 @@ class Server():
         '''Connect to host server through port'''
         try:
             conn, addr = self.s.accept()
+            self.clients.append(Client(conn, addr))
             # Loop until name is recieved
             clientName = ""
             while clientName == "":
-                clientName = self.recieve(conn)
+                clientName = self.clients[-1].recieve()
+            self.clients[-1].setName(clientName)
 
-            self.clients[clientName] = conn
+            print("Accepting {} as IP:{}".format(clientName, addr))
         except OSError:
             pass
 
     def isConnected(self) -> None:
         '''Update list of connected clients to server'''
         for client in self.clients:
-            if self.send(self.clients[client], ""):
+            # if self.send(client.conn, ""):
+            if client.send(""):
                 pass
             else:
-                del self.clients[client]
+                self.clients.remove(client)
                 break
 
-    def recieve(self, client:socket) -> str:
+
+class Client():
+
+    def __init__(self, conn, addr) -> None:
+        '''Constructor to initilize client'''
+        self.conn = conn
+        self.addr = addr
+
+    def setName(self, name) -> None:
+        '''Sets the name of the object'''
+        self.name = name
+
+    def recieve(self) -> str:
         '''Recieve msg from given client and reuturn msg or None'''
 
         try:
             # Wait for buffer to have a value
             start = time.time()
             while not config.timeout(start, 1):
-                val = client.recv(1)
+                val = self.conn.recv(1)
                 if val == None:
                     continue
                 else:
@@ -67,7 +82,7 @@ class Server():
             # Start to build message
             msg = ""
             while collectData:
-                byte = client.recv(1).decode('ascii')
+                byte = self.conn.recv(1).decode('ascii')
                 if byte == "}":
                     collectData = False
                 elif byte == "{":
@@ -82,13 +97,13 @@ class Server():
             # self.logs.error(self.LOC, "Sensor Read Intrupt")
             return ""
 
-    def send(self, client:socket, msg:str) -> bool:
+    def send(self, msg:str) -> bool:
         '''Send msg to Client and check full msg was sent'''
         try:
             msgBytes = 0
             msg = "{" + msg + "}"
             while msgBytes != len(msg):
-                msgBytes = client.send(msg.encode('ascii'))
+                msgBytes = self.conn.send(msg.encode('ascii'))
             return True
         except:
             # Client no longer exists

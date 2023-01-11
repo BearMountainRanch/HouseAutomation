@@ -7,7 +7,7 @@ class Main():
 
     def __init__(self) -> None:
         self.srv = Server()
-        self.sendBuffer = []
+        self.sendBuffer = [] # tuple(clientName, msg)
         self.recvBuffer = []
 
     def loop(self) -> None:
@@ -26,12 +26,25 @@ class Main():
             print("Clients: ", self.srv.clients)
 
             # Somehow send msgs from a buffer to desigated clients
-            # Logic
+            sendBuffer = self.sendBuffer
+            for packet in sendBuffer:
+                for client in self.srv.clients:
+                    if packet[0] == client.name:
+                        if client.send(packet[1]): # Send data
+                            self.sendBuffer.remove(packet)
+                        else:
+                            # Log Client as missing
+                            pass
+                        break
 
             # Recv data into the recvBuffer
-            self.recvBuffer.append(self.srv.recieve())
+            for client in self.srv.clients:
+                msg = client.recieve()
+                if msg == None:
+                    continue
+                self.recvBuffer.append(msg)
 
 if __name__ == "__main__":
     main = Main()
-    _thread.start_new_thread(main.socket)
+    _thread.start_new_thread(main.socket, ())
     main.loop()
