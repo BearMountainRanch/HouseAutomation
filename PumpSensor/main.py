@@ -2,6 +2,7 @@
 import network
 from machine import Pin
 from time import sleep
+import _thread
 from socketClient import Client
 import config
 
@@ -15,12 +16,32 @@ class Main():
         self.led = Pin(self.LED_PIN, Pin.OUT)
         self.led.on()
         self.cli = Client()
+        self.sendBuffer = []
+        self.recvBuffer = []
 
     def loop(self) -> None:
         '''Main program loop'''
         while True:
             sleep(1) # To keep debugging sane and reasonable
+            self.sendBuffer.append("LED")
+
+    def socket(self) -> None:
+        '''Main Socket Loop in Core1'''
+        while True:
+            sleep(1) # To keep debugging sane and reasonable
+
+            # Check connection to Server
             self.cli.isConnected()
+
+            # Send data in the sendBuffer and clear msg from sendBuffer 
+            sendBuffer = self.sendBuffer
+            for msg in sendBuffer:
+                self.cli.send(msg)
+                self.sendBuffer.remove(msg)
+
+            # Recv data into the recvBuffer
+            self.recvBuffer.append(self.cli.recieve())
+
 
     def connect(self) -> None:
         '''Connect to WLAN'''
@@ -48,5 +69,6 @@ class Main():
             return False
 
 if __name__ == "__main__":
-    run = Main()
-    run.loop()
+    main = Main()
+    _thread.start_new_thread(main.socket)
+    main.loop()
