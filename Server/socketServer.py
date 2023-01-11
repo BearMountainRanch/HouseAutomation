@@ -1,12 +1,12 @@
 # socketServer.py
 import socket
-from time import sleep
+import config
+import time
 
 class Server():
 
     HOST = ""
     PORT = 50007
-    BUFFSIZE = 1024
 
     def __init__(self) -> None:
         self.clients = {}
@@ -19,7 +19,8 @@ class Server():
         '''Connect to host server through port'''
         try:
             conn, addr = self.s.accept()
-            sleep(.5) # Give client time to conenct and send Name
+            # Should be able to remove this line with new protocal
+            time.sleep(.5) # Give client time to conenct and send Name
             clientName = self.recieve(conn)
             self.clients[clientName] = conn
             print('Connected by', addr)
@@ -30,25 +31,65 @@ class Server():
         '''Update list of connected clients to server'''
         for client in self.clients:
             try:
-                self.clients[client].send(b"-")
+                self.send(self.clients[client], "{}")
                 return True
             except:
                 del self.clients[client]
                 return False
 
-    def recieve(self, client) -> str:
+    def recieve(self, client:socket) -> str:
         '''Recieve msg from given client and reuturn msg or None'''
-        try:
-            return client.recv(self.BUFFSIZE).decode('ascii')
-        except:
-            return None
 
-    # WORKING ON THIS
-    def send(self, client, msg) -> bool:
-        '''Send msg to Server and check full msg was sent'''
         try:
-            byte = client.send(msg.encode('ascii'))
-            print("BYTE: ", byte)
+            # Wait for buffer to have a value
+            start = time.time()
+            while not config.timeout(start, 1):
+                val = client.recv(1)
+                if val == None:
+                    continue
+                else:
+                    break
+
+            # # Enter if timeout was reached
+            # if config.timeout(start, 1):
+            #     self.logs.warning(self.LOC, "Read Timeout")
+            #     return ''
+
+            # Look for starting frame
+            collectData = False
+            if val == b"{":
+                collectData = True
+            else:
+                # Starting frame expected and was not recieved
+                # self.logs.warning(self.LOC, "Data message corupted from beggining: {}".format(val))
+                return self.recieve()
+
+            # Start to build message
+            msg = ""
+            while collectData:
+                byte = client.recv(1).decode('ascii')
+                if byte == "}":
+                    collectData = False
+                elif byte == "{":
+                    # self.logs.error(self.LOC, "Data message corupted during")
+                    msg = ""
+                else:
+                    msg += byte
+        
+            return msg
+            
+        except:
+            # self.logs.error(self.LOC, "Sensor Read Intrupt")
+            return ""
+
+    def send(self, client:socket, msg:str) -> bool:
+        '''Send msg to Client and check full msg was sent'''
+        try:
+            msgBytes = 0
+            msg = "{" + msg + "}"
+            while msgBytes != len(msg):
+                msgBytes = client.send(msg.encode('ascii'))
+            return True
         except:
             # Client no longer exists
             return False
