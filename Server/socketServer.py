@@ -19,23 +19,23 @@ class Server():
         '''Connect to host server through port'''
         try:
             conn, addr = self.s.accept()
-            # Should be able to remove this line with new protocal
-            time.sleep(.5) # Give client time to conenct and send Name
-            clientName = self.recieve(conn)
+            # Loop until name is recieved
+            clientName = ""
+            while clientName == "":
+                clientName = self.recieve(conn)
+
             self.clients[clientName] = conn
-            print('Connected by', addr)
         except OSError:
             pass
 
-    def isConnected(self) -> bool:
+    def isConnected(self) -> None:
         '''Update list of connected clients to server'''
         for client in self.clients:
-            try:
-                self.send(self.clients[client], "{}")
-                return True
-            except:
+            if self.send(self.clients[client], ""):
+                pass
+            else:
                 del self.clients[client]
-                return False
+                break
 
     def recieve(self, client:socket) -> str:
         '''Recieve msg from given client and reuturn msg or None'''
@@ -51,9 +51,9 @@ class Server():
                     break
 
             # # Enter if timeout was reached
-            # if config.timeout(start, 1):
-            #     self.logs.warning(self.LOC, "Read Timeout")
-            #     return ''
+            if config.timeout(start, 1):
+                # self.logs.warning(self.LOC, "Read Timeout")
+                return ""
 
             # Look for starting frame
             collectData = False

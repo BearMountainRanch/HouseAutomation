@@ -38,7 +38,7 @@ class Main():
             SSID, PWD = wifi.read().split("\r\n")
         return SSID, PWD
 
-    def wifiFileWrite(self, SSID, PWD) -> bool:
+    def wifiFileWrite(self, SSID:str, PWD:str) -> bool:
         '''Write Wifi file and return True if succesful'''
         try:
             with open(self.WIFI_FILE_NAME, 'w') as wifi:

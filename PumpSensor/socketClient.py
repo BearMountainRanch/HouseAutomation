@@ -20,15 +20,13 @@ class Client():
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.connect((self.HOST, self.PORT))
         self.send(self.SOCKET_NAME)
-        # Should be able to remove this line with new protocal
-        time.sleep(1) # Waiting for Server to record Client Name before continuing
 
     def close(self) -> None:
         self.s.close()
 
     def isConnected(self) -> bool:
         '''Checks connection to Server and connects if not'''
-        if self.send("{}"):
+        if self.send("--"):
             return True
         else:
             self.reConnect()
