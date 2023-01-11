@@ -1,8 +1,5 @@
 # config.py
-
-state = None
-states = ["Connect", "Something else"]
-
+import time
 
 def timeout(start:float, duration:int) -> bool:
     '''Determines if a timeout was reached | Returns bool'''
