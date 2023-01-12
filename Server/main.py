@@ -21,14 +21,13 @@ class Main():
 
     def socket(self) -> None:
         '''Main Socket Loop in Core1'''
-        check = time.time()
         while True:
-            time.sleep(1) # To keep debugging sane and reasonable
+            time.sleep(.1) # To keep debugging sane and reasonable
 
             # Check connection to Clients
             self.srv.accept()
             self.srv.isConnected()
-            print("Clients: ", self.srv.clients)
+            # print("Clients: ", self.srv.clients)
 
             # Somehow send msgs from a buffer to desigated clients
             sendBuffer = self.sendBuffer
