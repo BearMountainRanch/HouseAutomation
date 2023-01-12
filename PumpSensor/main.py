@@ -22,13 +22,25 @@ class Main():
     def loop(self) -> None:
         '''Main program loop'''
         while True:
-            sleep(1) # To keep debugging sane and reasonable
-            self.sendBuffer.append("LED")
+            # sleep(1) # To keep debugging sane and reasonable
+            
+            recvBuffer = self.recvBuffer
+            # print("Buff: ", recvBuffer)
+            for msg in recvBuffer:
+                if msg == config.msgs[0]:
+                    self.led.on()
+                    self.recvBuffer.remove(msg)
+                elif msg == config.msgs[1]:
+                    self.led.off()
+                    self.recvBuffer.remove(msg)
+                else:
+                    # Msg recvied does not match protocall
+                    pass
 
     def socket(self) -> None:
         '''Main Socket Loop in Core1'''
         while True:
-            sleep(1) # To keep debugging sane and reasonable
+            sleep(.5) # To keep debugging sane and reasonable
 
             # Check connection to Server
             self.cli.isConnected()
@@ -40,7 +52,9 @@ class Main():
                 self.sendBuffer.remove(msg)
 
             # Recv data into the recvBuffer
-            self.recvBuffer.append(self.cli.recieve())
+            msg = self.cli.recieve()
+            if len(msg) != 0:
+                self.recvBuffer.append(msg)
 
 
     def connect(self) -> None:
@@ -70,5 +84,5 @@ class Main():
 
 if __name__ == "__main__":
     main = Main()
-    _thread.start_new_thread(main.socket)
+    _thread.start_new_thread(main.socket, ())
     main.loop()

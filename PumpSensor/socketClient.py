@@ -11,22 +11,32 @@ class Client():
     BUFSIZE = 1024
 
     def __init__(self) -> None:
-        self.connect()
         self.state = config.state
         self.states = config.states
 
     def connect(self) -> None:
         '''Connect to host server through port'''
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.connect((self.HOST, self.PORT))
+
+        while True:
+            self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            try:
+                self.s.connect((self.HOST, self.PORT))
+                break
+            except OSError:
+                self.s.close
+                continue
         self.send(self.SOCKET_NAME)
 
     def close(self) -> None:
-        self.s.close()
+        '''Close Socket (if it does not exist just pass)'''
+        try:
+            self.s.close()
+        except:
+            pass
 
     def isConnected(self) -> bool:
         '''Checks connection to Server and connects if not'''
-        if self.send("--"):
+        if self.send(""):
             return True
         else:
             self.reConnect()
@@ -37,14 +47,14 @@ class Client():
         self.close()
         self.connect()
 
-    def recieve(self, client:socket) -> str:
-        '''Recieve msg from given client and reuturn msg or None'''
+    def recieve(self) -> str:
+        '''Recieve msg from Server and reuturn msg or None'''
 
         try:
             # Wait for buffer to have a value
             start = time.time()
             while not config.timeout(start, 1):
-                val = client.recv(1)
+                val = self.s.recv(1)
                 if val == None:
                     continue
                 else:
@@ -61,7 +71,7 @@ class Client():
             # Start to build message
             msg = ""
             while collectData:
-                byte = client.recv(1).decode('ascii')
+                byte = self.s.recv(1).decode('ascii')
                 if byte == "}":
                     collectData = False
                 elif byte == "{":
