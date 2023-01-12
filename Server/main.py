@@ -25,7 +25,6 @@ class Main():
         while True:
             time.sleep(1) # To keep debugging sane and reasonable
 
-            # I BELIEVE IT HAS SOMETHING TO DO WITH SENDINGING SO MANY ACCEPTS
             # Check connection to Clients
             if time.time() - check > 1:
                 self.srv.accept()
