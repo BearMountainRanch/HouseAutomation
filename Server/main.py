@@ -26,11 +26,9 @@ class Main():
             time.sleep(1) # To keep debugging sane and reasonable
 
             # Check connection to Clients
-            if time.time() - check > 1:
-                self.srv.accept()
-                self.srv.isConnected()
-                print("Clients: ", self.srv.clients)
-                check = time.time()
+            self.srv.accept()
+            self.srv.isConnected()
+            print("Clients: ", self.srv.clients)
 
             # Somehow send msgs from a buffer to desigated clients
             sendBuffer = self.sendBuffer
