@@ -42,6 +42,12 @@ class Server():
                 self.clients.remove(client)
                 break
 
+    def close(self) -> None:
+        '''Close Socket (if it does not exist just pass)'''
+        try:
+            self.s.close()
+        except:
+            pass
 
 class Client():
 

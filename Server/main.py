@@ -21,34 +21,37 @@ class Main():
 
     def socket(self) -> None:
         '''Main Socket Loop in Core1'''
-        while True:
-            time.sleep(.1) # To keep debugging sane and reasonable
+        start = time.time()
+        while time.time() - start < 10:
+            time.sleep(1) # To keep debugging sane and reasonable
 
             # Check connection to Clients
             self.srv.accept()
             self.srv.isConnected()
-            # print("Clients: ", self.srv.clients)
+            print("Clients: ", self.srv.clients)
 
-            # Somehow send msgs from a buffer to desigated clients
-            sendBuffer = self.sendBuffer
-            for packet in sendBuffer:
-                for client in self.srv.clients:
-                    if packet[0] == client.name:
-                        if client.send(packet[1]): # Send data
-                            self.sendBuffer.remove(packet)
-                        else:
-                            # Log Client as missing
-                            pass
-                        break
+            # # Somehow send msgs from a buffer to desigated clients
+            # sendBuffer = self.sendBuffer
+            # for packet in sendBuffer:
+            #     for client in self.srv.clients:
+            #         if packet[0] == client.name:
+            #             if client.send(packet[1]): # Send data
+            #                 self.sendBuffer.remove(packet)
+            #             else:
+            #                 # Log Client as missing
+            #                 pass
+            #             break
 
-            # Recv data into the recvBuffer
-            for client in self.srv.clients:
-                msg = client.recieve()
-                if msg == None:
-                    continue
-                self.recvBuffer.append(msg)
+            # # Recv data into the recvBuffer
+            # for client in self.srv.clients:
+            #     msg = client.recieve()
+            #     if msg == None:
+            #         continue
+            #     self.recvBuffer.append(msg)
+        self.srv.close()
 
 if __name__ == "__main__":
     main = Main()
-    _thread.start_new_thread(main.socket, ())
-    main.loop()
+    # _thread.start_new_thread(main.socket, ())
+    # main.loop()
+    main.socket()

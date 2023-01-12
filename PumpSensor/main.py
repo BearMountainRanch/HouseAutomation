@@ -22,7 +22,7 @@ class Main():
     def loop(self) -> None:
         '''Main program loop'''
         while True:
-            sleep(1) # To keep debugging sane and reasonable
+            # sleep(1) # To keep debugging sane and reasonable
             
             recvBuffer = self.recvBuffer
             for msg in recvBuffer:
@@ -44,16 +44,16 @@ class Main():
             # Check connection to Server
             self.cli.isConnected()
 
-            # Send data in the sendBuffer and clear msg from sendBuffer 
-            sendBuffer = self.sendBuffer
-            for msg in sendBuffer:
-                self.cli.send(msg)
-                self.sendBuffer.remove(msg)
+            # # Send data in the sendBuffer and clear msg from sendBuffer 
+            # sendBuffer = self.sendBuffer
+            # for msg in sendBuffer:
+            #     self.cli.send(msg)
+            #     self.sendBuffer.remove(msg)
 
-            # Recv data into the recvBuffer
-            msg = self.cli.recieve()
-            if len(msg) != 0:
-                self.recvBuffer.append(msg)
+            # # Recv data into the recvBuffer
+            # msg = self.cli.recieve()
+            # if len(msg) != 0:
+            #     self.recvBuffer.append(msg)
 
 
     def connect(self) -> None:
@@ -83,5 +83,6 @@ class Main():
 
 if __name__ == "__main__":
     main = Main()
-    _thread.start_new_thread(main.socket, ())
-    main.loop()
+    # _thread.start_new_thread(main.socket, ())
+    # main.loop()
+    main.socket()
