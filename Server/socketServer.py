@@ -16,9 +16,10 @@ class Server():
         self.s.settimeout(0)
 
     def accept(self) -> None:
-        '''Connect to host server through port'''
+        '''Connect to Client through port'''
         try:
             conn, addr = self.s.accept()
+            time.sleep(2) # Allow client to inilize connection. Will break client without pause
             self.clients.append(Client(conn, addr))
             # Loop until name is recieved
             clientName = ""

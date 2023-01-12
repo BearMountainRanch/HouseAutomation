@@ -8,7 +8,6 @@ class Client():
     HOST = "10.0.0.33"
     PORT = 50007
     SOCKET_NAME = "Pump"
-    BUFSIZE = 1024
 
     def __init__(self) -> None:
         self.state = config.state
@@ -16,14 +15,13 @@ class Client():
 
     def connect(self) -> None:
         '''Connect to host server through port'''
-
         while True:
-            self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             try:
+                self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.s.connect((self.HOST, self.PORT))
                 break
             except OSError:
-                self.s.close
+                self.close()
                 continue
         self.send(self.SOCKET_NAME)
 
@@ -95,5 +93,5 @@ class Client():
         except:
             # Server is down
             self.state = self.states[1]
-            self.reConnect()
+            # self.reConnect()
             return False

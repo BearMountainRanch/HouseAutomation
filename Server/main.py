@@ -2,7 +2,7 @@
 import _thread
 from socketServer import Server
 import config
-from time import sleep
+import time
 
 class Main():
 
@@ -14,20 +14,24 @@ class Main():
     def loop(self) -> None:
         '''Main program loop'''
         while True:
-            sleep(1) # To keep debugging sane and reasonable
+            time.sleep(1) # To keep debugging sane and reasonable
             self.sendBuffer.append(("Pump", config.msgs[0]))
-            sleep(1) # To keep debugging sane and reasonable
+            time.sleep(1) # To keep debugging sane and reasonable
             self.sendBuffer.append(("Pump", config.msgs[1]))
 
     def socket(self) -> None:
         '''Main Socket Loop in Core1'''
+        check = time.time()
         while True:
-            sleep(1) # To keep debugging sane and reasonable
+            time.sleep(1) # To keep debugging sane and reasonable
 
+            # I BELIEVE IT HAS SOMETHING TO DO WITH SENDINGING SO MANY ACCEPTS
             # Check connection to Clients
-            self.srv.accept()
-            self.srv.isConnected()
-            print("Clients: ", self.srv.clients)
+            if time.time() - check > 1:
+                self.srv.accept()
+                self.srv.isConnected()
+                print("Clients: ", self.srv.clients)
+                check = time.time()
 
             # Somehow send msgs from a buffer to desigated clients
             sendBuffer = self.sendBuffer

@@ -25,7 +25,6 @@ class Main():
             sleep(1) # To keep debugging sane and reasonable
             
             recvBuffer = self.recvBuffer
-            # print("Buff: ", recvBuffer)
             for msg in recvBuffer:
                 if msg == config.msgs[0]:
                     self.led.on()
