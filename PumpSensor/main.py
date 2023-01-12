@@ -22,7 +22,7 @@ class Main():
     def loop(self) -> None:
         '''Main program loop'''
         while True:
-            # sleep(1) # To keep debugging sane and reasonable
+            sleep(1) # To keep debugging sane and reasonable
             
             recvBuffer = self.recvBuffer
             # print("Buff: ", recvBuffer)
@@ -40,7 +40,7 @@ class Main():
     def socket(self) -> None:
         '''Main Socket Loop in Core1'''
         while True:
-            sleep(.5) # To keep debugging sane and reasonable
+            sleep(1) # To keep debugging sane and reasonable
 
             # Check connection to Server
             self.cli.isConnected()

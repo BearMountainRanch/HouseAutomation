@@ -18,7 +18,6 @@ class Server():
     def accept(self) -> None:
         '''Connect to host server through port'''
         try:
-            # time.sleep(.5)
             conn, addr = self.s.accept()
             self.clients.append(Client(conn, addr))
             # Loop until name is recieved
