@@ -10,6 +10,7 @@ class Client():
     SOCKET_NAME = "Pump"
 
     def __init__(self) -> None:
+        # self.connect() # I dont want this
         self.state = config.state
         self.states = config.states
 
@@ -19,11 +20,12 @@ class Client():
             try:
                 self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.s.connect((self.HOST, self.PORT))
+                self.send(self.SOCKET_NAME)
+                time.sleep(1) # Waiting for Server to record Client
                 break
             except OSError:
                 self.close()
                 continue
-        self.send(self.SOCKET_NAME)
 
     def close(self) -> None:
         '''Close Socket (if it does not exist just pass)'''
@@ -89,6 +91,7 @@ class Client():
             msg = "{" + msg + "}"
             while msgBytes != len(msg):
                 msgBytes = self.s.send(msg.encode('ascii'))
+            time.sleep(.1) # Give time for msg to send
             return True
         except:
             # Server is down

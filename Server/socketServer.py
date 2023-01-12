@@ -105,6 +105,7 @@ class Client():
             msg = "{" + msg + "}"
             while msgBytes != len(msg):
                 msgBytes = self.conn.send(msg.encode('ascii'))
+            time.sleep(.1) # Give time for msg to send
             return True
         except:
             # Client no longer exists

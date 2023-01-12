@@ -39,7 +39,7 @@ class Main():
     def socket(self) -> None:
         '''Main Socket Loop in Core1'''
         while True:
-            sleep(1) # To keep debugging sane and reasonable
+            # sleep(.1) # To keep debugging sane and reasonable
 
             # Check connection to Server
             self.cli.isConnected()
