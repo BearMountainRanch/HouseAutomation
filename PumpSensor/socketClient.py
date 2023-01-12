@@ -10,7 +10,7 @@ class Client():
     SOCKET_NAME = "Pump"
 
     def __init__(self) -> None:
-        # self.connect() # I dont want this
+        self.connect() # I dont want this
         self.state = config.state
         self.states = config.states
 
