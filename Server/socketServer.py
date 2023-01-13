@@ -19,14 +19,12 @@ class Server():
         '''Connect to Client through port'''
         try:
             conn, addr = self.s.accept()
-            time.sleep(1) # Allow client to inilize connection. Will break client without pause
             self.clients.append(Client(conn, addr))
             # Loop until name is recieved
             clientName = ""
             while clientName == "":
                 clientName = self.clients[-1].recieve()
             self.clients[-1].setName(clientName)
-            time.sleep(1)
 
             print("Accepting {} as IP:{}".format(clientName, addr))
         except OSError:
