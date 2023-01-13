@@ -1,5 +1,6 @@
 # Main.py
 import network
+import machine
 from machine import Pin
 import _thread
 from socketClient import Client
@@ -16,8 +17,8 @@ class Main():
         self.led = Pin(self.LED_PIN, Pin.OUT)
         self.led.on()
         self.cli = Client()
-        self.sendBuffer = []
-        self.recvBuffer = []
+        # self.sendBuffer = []
+        # self.recvBuffer = []
 
     def loop(self) -> None:
         '''Main program loop'''
@@ -31,6 +32,7 @@ class Main():
                     self.led.off()
                 else:
                     # Msg recvied does not match protocall
+                    print("Protocal")
                     pass
                 self.recvBuffer.remove(msg)
 
@@ -38,24 +40,25 @@ class Main():
         '''Main Socket Loop in Core1'''
         while True:
 
-            # sleep(.1)
+            sleep(.5)
             # Check connection to Server
             self.cli.isConnected()
 
-            # Send data in the sendBuffer and clear msg from sendBuffer 
-            sendBuffer = self.sendBuffer
-            for msg in sendBuffer:
-                self.cli.send(msg)
-                self.sendBuffer.remove(msg)
-
-            # Recv data into the recvBuffer
             try:
-                msg = self.cli.recieve()
-                if len(msg) != 0:
-                    self.recvBuffer.append(msg)
+                self.cli.s.recv(1024)
             except:
-                print("PROBLEM DID OCCOUR HERE")
+                pass
 
+            # # Send data in the sendBuffer and clear msg from sendBuffer 
+            # sendBuffer = self.sendBuffer
+            # for msg in sendBuffer:
+            #     self.cli.send(msg)
+            #     self.sendBuffer.remove(msg)
+
+            # # Recv data into the recvBuffer
+            # msg = self.cli.recieve()
+            # if len(msg) != 0:
+            #     self.recvBuffer.append(msg)
 
     def connect(self) -> None:
         '''Connect to WLAN'''
@@ -83,6 +86,12 @@ class Main():
             return False
 
 if __name__ == "__main__":
-    main = Main()
-    _thread.start_new_thread(main.socket, ())
-    main.loop()
+    try:
+        main = Main()
+        # _thread.start_new_thread(main.socket, ())
+        # main.loop()
+        main.socket()
+    except KeyboardInterrupt:
+        main.cli.s.close()
+        machine.reset()
+        print("Closed succesfully")

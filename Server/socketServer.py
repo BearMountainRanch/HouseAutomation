@@ -33,7 +33,6 @@ class Server():
     def isConnected(self) -> None:
         '''Update list of connected clients to server'''
         for client in self.clients:
-            # if self.send(client.conn, ""):
             if client.send(""):
                 pass
             else:
@@ -63,19 +62,7 @@ class Client():
         '''Recieve msg from given client and reuturn msg or None'''
 
         try:
-            # Wait for buffer to have a value
-            start = time.time()
-            while not config.timeout(start, 1):
-                val = self.conn.recv(1)
-                if val == None:
-                    continue
-                else:
-                    break
-
-            # # Enter if timeout was reached
-            if config.timeout(start, 1):
-                # self.logs.warning(self.LOC, "Read Timeout")
-                return ""
+            val = self.conn.recv(1)
 
             # Look for starting frame
             collectData = False
@@ -107,13 +94,11 @@ class Client():
     def send(self, msg:str) -> bool:
         '''Send msg to Client and check full msg was sent'''
         try:
-            # Assuming that somewhere here might not be able to send msg fast
-            msgBytes = 0
             msg = "{" + msg + "}"
-            while msgBytes != len(msg):
-                msgBytes = self.conn.send(msg.encode('ascii'))
-            time.sleep(.1) # Give time for msg to send
+            self.conn.send(msg.encode('ascii'))
+            # time.sleep(.1) # Give time for msg to send
             return True
-        except:
+        except OSError as e:
+            print(e)
             # Client no longer exists
             return False

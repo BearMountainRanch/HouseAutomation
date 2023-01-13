@@ -1,3 +1,6 @@
-things = {'dave': 1, 'gabe': 2}
+s = "hiHellohi"
 
-print(things['sam'])
+msg = s[:2]
+print(msg)
+s = s[2:]
+print(s)

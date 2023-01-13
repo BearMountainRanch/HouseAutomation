@@ -1,54 +1,110 @@
 # socketClient.py
 import socket
+import time
 
 class Client():
 
-    HOST = "10.0.0.186"
+    HOST = "10.0.0.33"
     PORT = 50007
-    BUFSIZE = 1024
+    SOCKET_NAME = "Pump"
 
     def __init__(self) -> None:
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connect()
+        self.s.settimeout(0)
+        self.recvBuffer = ""
 
-    def connect(self) -> bool:
+    def connect(self) -> None:
         '''Connect to host server through port'''
+        while True:
+            try:
+                time.sleep(1) # (Important) Gives time on unexpected shutdown
+                self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.s.connect((self.HOST, self.PORT))
+                self.send(self.SOCKET_NAME)
+                time.sleep(1) # (Important) Gives time on unexpected shutdown
+                break
+            except OSError:
+                self.close()
+                continue
+
+    def close(self) -> None:
+        '''Close Socket (if it does not exist just pass)'''
         try:
-            self.s.connect((self.HOST, self.PORT))
+            self.s.close()
+        except:
+            pass
+
+    def isConnected(self) -> bool:
+        '''Checks connection to Server and connects if not'''
+        if self.send(""):
             return True
-        except TimeoutError:
-            return False 
-        except InterruptedError:
+        else:
+            self.reConnect()
             return False
 
-    def send(self, package) -> bool:
-        '''Send package if connection exists'''
-        package = str(package)
-        cksum = self.checksum(package)
+    def reConnect(self) -> None:
+        '''Reconnect to socket'''
+        self.close()
+        self.connect()
 
-        self.s.sendall(package)
-        print("Sent: ", package)
+    def recv(self) -> None:
+        '''Transfer machine buffer to program buffer'''
+        try:
+            self.recvBuffer += self.s.recv(1024).decode('ascii').replace("{}", "")
+            print("BUF: ", self.recvBuffer)
+        except:
+            pass
 
-        # try:
-        #     self.s.sendall(package)
-        #     if self.s.recv(self.BUFSIZE) != cksum:
-        #         self.send(package)
-        #     return True
-        # except:
-        #     con = False
-        #     while not con:
-        #         con = self.connect()
-        #     self.send(package)
-    
+    def getRecvBuf(self, buf:int) -> str:
+        '''Return msg that is buf long'''
+        try:
+            msg = self.recvBuffer[:buf]
+            self.recvBuffer = self.recvBuffer[buf:]
+            return msg
+        except:
+            return ""
+
     def recieve(self) -> str:
-        msg = self.s.recv(1024)
-        print("Recivied: ", msg)
-        return msg
+        '''Recieve msg from Server and reuturn msg or None'''
+        self.recv()
+        try:
+            val = self.getRecvBuf(1)
 
-    def checksum(self, package:list[str]) -> str:
-        '''Create a checksum for package'''
-        checksum = 0
-        for i in package:
-            for j in i:
-                checksum = checksum ^ ord(j)
-        return str(checksum)[-2:]
+            # Look for starting frame
+            collectData = False
+            if val == b"{":
+                collectData = True
+            else:
+                # Starting frame expected and was not recieved
+                print("Nothing here")
+                return ""
+
+            # Start to build message
+            msg = ""
+            while collectData:
+                byte = self.getRecvBuf(1)
+                if byte == "}":
+                    collectData = False
+                elif byte == "{":
+                    msg = ""
+                else:
+                    msg += byte
+
+            return msg
+            
+        except OSError as e:
+            print(e)
+            return ""
+
+    def send(self, msg:str) -> bool:
+        '''Send msg to Server and check full msg was sent'''
+        try:
+            msg = "{" + msg + "}"
+            self.s.send(msg.encode('ascii'))
+            time.sleep(.1) # Give time for msg to send
+            return True
+        except:
+            # Server is down
+            self.state = self.states[1]
+            # self.reConnect()
+            return False

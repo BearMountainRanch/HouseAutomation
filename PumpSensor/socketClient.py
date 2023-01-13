@@ -13,7 +13,8 @@ class Client():
         self.connect()
         self.state = config.state
         self.states = config.states
-        self.s.settimeout(0)
+        self.s.settimeout(.1)
+        self.recvBuffer = ""
 
     def connect(self) -> None:
         '''Connect to host server through port'''
@@ -25,7 +26,8 @@ class Client():
                 self.send(self.SOCKET_NAME)
                 time.sleep(1) # (Important) Gives time on unexpected shutdown
                 break
-            except OSError:
+            except OSError as e:
+                print("CON: ", e)
                 self.close()
                 continue
 
@@ -33,14 +35,16 @@ class Client():
         '''Close Socket (if it does not exist just pass)'''
         try:
             self.s.close()
-        except:
-            pass
+        except OSError as e:
+            print("CLOSE: ", e)
 
     def isConnected(self) -> bool:
         '''Checks connection to Server and connects if not'''
         if self.send(""):
+            print("T")
             return True
         else:
+            print("F")
             self.reConnect()
             return False
 
@@ -49,19 +53,28 @@ class Client():
         self.close()
         self.connect()
 
+    def recv(self) -> None:
+        '''Transfer machine buffer to program buffer'''
+        try:
+            self.recvBuffer += self.s.recv(1024).decode('ascii').replace("{}", "")
+            print("BUF: ", self.recvBuffer)
+        except:
+            pass
+
+    def getRecvBuf(self, buf:int) -> str:
+        '''Return msg that is buf long'''
+        try:
+            msg = self.recvBuffer[:buf]
+            self.recvBuffer = self.recvBuffer[buf:]
+            return msg
+        except:
+            return ""
+
     def recieve(self) -> str:
         '''Recieve msg from Server and reuturn msg or None'''
+        self.recv()
         try:
-            # Wait for buffer to have a value
-            start = time.time()
-            while not config.timeout(start, 1):
-                print(".")
-                val = self.s.recv(1) # Stops being able to recieve data here and failes
-                print("-")
-                if val == None:
-                    continue
-                else:
-                    break
+            val = self.getRecvBuf(1)
 
             # Look for starting frame
             collectData = False
@@ -69,13 +82,13 @@ class Client():
                 collectData = True
             else:
                 # Starting frame expected and was not recieved
-                print("Start Frame")
-                return self.recieve()
+                print("Nothing here")
+                return ""
 
             # Start to build message
             msg = ""
             while collectData:
-                byte = self.s.recv(1).decode('ascii')
+                byte = self.getRecvBuf(1)
                 if byte == "}":
                     collectData = False
                 elif byte == "{":
@@ -85,19 +98,19 @@ class Client():
 
             return msg
             
-        except:
+        except OSError as e:
+            print(e)
             return ""
 
     def send(self, msg:str) -> bool:
         '''Send msg to Server and check full msg was sent'''
         try:
-            msgBytes = 0
             msg = "{" + msg + "}"
-            while msgBytes != len(msg):
-                msgBytes = self.s.send(msg.encode('ascii'))
-            time.sleep(.1) # Give time for msg to send
+            self.s.send(msg.encode('ascii'))
+            # time.sleep(.1) # Give time for msg to send
             return True
-        except:
+        except OSError as e:
+            print("SEND: ", e)
             # Server is down
             self.state = self.states[1]
             # self.reConnect()

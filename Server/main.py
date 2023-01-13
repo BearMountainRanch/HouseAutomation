@@ -23,25 +23,31 @@ class Main():
         '''Main Socket Loop in Core1'''
         while True:
 
+            time.sleep(.5)
             # Check connection to Clients
             self.srv.accept()
             self.srv.isConnected()
 
-            # Send msgs from sendBuffer to desigated clients
-            sendBuffer = self.sendBuffer
-            for packet in sendBuffer:
-                for client in self.srv.clients:
-                    if packet[0] == client.name:
-                        client.send(packet[1]) # Send data
-                        self.sendBuffer.remove(packet)
-                        break
+            try:
+                self.srv.s.recv(1024)
+            except:
+                pass
 
-            # Recv data into the recvBuffer
-            for client in self.srv.clients:
-                msg = client.recieve()
-                if msg == None:
-                    continue
-                self.recvBuffer.append(msg)
+            # # Send msgs from sendBuffer to desigated clients
+            # sendBuffer = self.sendBuffer
+            # for packet in sendBuffer:
+            #     for client in self.srv.clients:
+            #         if packet[0] == client.name:
+            #             client.send(packet[1]) # Send data
+            #             self.sendBuffer.remove(packet)
+            #             break
+
+            # # Recv data into the recvBuffer
+            # for client in self.srv.clients:
+            #     msg = client.recieve()
+            #     if msg == None:
+            #         continue
+            #     self.recvBuffer.append(msg)
 
 if __name__ == "__main__":
     main = Main()
