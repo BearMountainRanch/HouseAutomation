@@ -1,10 +1,10 @@
 # Main.py
 import network
 from machine import Pin
-from time import sleep
 import _thread
 from socketClient import Client
 import config
+from time import sleep
 
 class Main():
 
@@ -22,37 +22,39 @@ class Main():
     def loop(self) -> None:
         '''Main program loop'''
         while True:
-            # sleep(1) # To keep debugging sane and reasonable
             
             recvBuffer = self.recvBuffer
             for msg in recvBuffer:
                 if msg == config.msgs[0]:
                     self.led.on()
-                    self.recvBuffer.remove(msg)
                 elif msg == config.msgs[1]:
                     self.led.off()
-                    self.recvBuffer.remove(msg)
                 else:
                     # Msg recvied does not match protocall
                     pass
+                self.recvBuffer.remove(msg)
 
     def socket(self) -> None:
         '''Main Socket Loop in Core1'''
         while True:
 
+            # sleep(.1)
             # Check connection to Server
             self.cli.isConnected()
 
-            # # Send data in the sendBuffer and clear msg from sendBuffer 
-            # sendBuffer = self.sendBuffer
-            # for msg in sendBuffer:
-            #     self.cli.send(msg)
-            #     self.sendBuffer.remove(msg)
+            # Send data in the sendBuffer and clear msg from sendBuffer 
+            sendBuffer = self.sendBuffer
+            for msg in sendBuffer:
+                self.cli.send(msg)
+                self.sendBuffer.remove(msg)
 
-            # # Recv data into the recvBuffer
-            # msg = self.cli.recieve()
-            # if len(msg) != 0:
-            #     self.recvBuffer.append(msg)
+            # Recv data into the recvBuffer
+            try:
+                msg = self.cli.recieve()
+                if len(msg) != 0:
+                    self.recvBuffer.append(msg)
+            except:
+                print("PROBLEM DID OCCOUR HERE")
 
 
     def connect(self) -> None:
@@ -82,6 +84,5 @@ class Main():
 
 if __name__ == "__main__":
     main = Main()
-    # _thread.start_new_thread(main.socket, ())
-    # main.loop()
-    main.socket()
+    _thread.start_new_thread(main.socket, ())
+    main.loop()

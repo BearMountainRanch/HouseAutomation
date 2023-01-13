@@ -37,6 +37,7 @@ class Server():
             if client.send(""):
                 pass
             else:
+                print("Removing {} as a Client".format(client.name))
                 self.clients.remove(client)
                 break
 
@@ -106,6 +107,7 @@ class Client():
     def send(self, msg:str) -> bool:
         '''Send msg to Client and check full msg was sent'''
         try:
+            # Assuming that somewhere here might not be able to send msg fast
             msgBytes = 0
             msg = "{" + msg + "}"
             while msgBytes != len(msg):

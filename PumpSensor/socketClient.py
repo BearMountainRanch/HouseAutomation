@@ -13,6 +13,7 @@ class Client():
         self.connect()
         self.state = config.state
         self.states = config.states
+        self.s.settimeout(0)
 
     def connect(self) -> None:
         '''Connect to host server through port'''
@@ -50,12 +51,13 @@ class Client():
 
     def recieve(self) -> str:
         '''Recieve msg from Server and reuturn msg or None'''
-
         try:
             # Wait for buffer to have a value
             start = time.time()
             while not config.timeout(start, 1):
-                val = self.s.recv(1)
+                print(".")
+                val = self.s.recv(1) # Stops being able to recieve data here and failes
+                print("-")
                 if val == None:
                     continue
                 else:
@@ -67,6 +69,7 @@ class Client():
                 collectData = True
             else:
                 # Starting frame expected and was not recieved
+                print("Start Frame")
                 return self.recieve()
 
             # Start to build message
@@ -79,7 +82,7 @@ class Client():
                     msg = ""
                 else:
                     msg += byte
-        
+
             return msg
             
         except:
