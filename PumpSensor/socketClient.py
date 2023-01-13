@@ -10,7 +10,7 @@ class Client():
     SOCKET_NAME = "Pump"
 
     def __init__(self) -> None:
-        self.connect() # I dont want this
+        self.connect() # THIS MIGHT BE THE PROBLEM
         self.state = config.state
         self.states = config.states
 
@@ -18,6 +18,7 @@ class Client():
         '''Connect to host server through port'''
         while True:
             try:
+                # Might be able to put following line in the constructor to fix things
                 self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.s.connect((self.HOST, self.PORT))
                 self.send(self.SOCKET_NAME)
