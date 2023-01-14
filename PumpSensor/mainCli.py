@@ -32,7 +32,6 @@ class Main():
                     self.led.off()
                 else:
                     # Msg recvied does not match protocall
-                    print("Protocal")
                     pass
                 self.recvBuffer.remove(msg)
 
@@ -46,7 +45,8 @@ class Main():
 
             try:
                 self.cli.s.recv(1024)
-            except:
+            except OSError as e:
+                print("RECVERROR: ", e)
                 pass
 
             # # Send data in the sendBuffer and clear msg from sendBuffer 

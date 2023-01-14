@@ -11,9 +11,9 @@ class Client():
 
     def __init__(self) -> None:
         self.connect()
-        self.state = config.state
-        self.states = config.states
-        self.s.settimeout(.1)
+        # self.state = config.state
+        # self.states = config.states
+        self.s.settimeout(0)
         self.recvBuffer = ""
 
     def connect(self) -> None:
