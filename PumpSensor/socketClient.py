@@ -13,7 +13,7 @@ class Client():
         self.connect()
         # self.state = config.state
         # self.states = config.states
-        self.s.settimeout(0)
+        # self.s.settimeout(0)
         self.recvBuffer = ""
 
     def connect(self) -> None:
@@ -56,8 +56,8 @@ class Client():
         try:
             self.recvBuffer += self.s.recv(1024).decode('ascii').replace("{}", "")
             print("BUF: ", self.recvBuffer)
-        except:
-            pass
+        except OSError as e:
+            print(e)
 
     def getRecvBuf(self, buf:int) -> str:
         '''Return msg that is buf long'''
@@ -76,7 +76,7 @@ class Client():
 
             # Look for starting frame
             collectData = False
-            if val == b"{":
+            if val == "{":
                 collectData = True
             else:
                 # Starting frame expected and was not recieved
@@ -94,6 +94,7 @@ class Client():
                 else:
                     msg += byte
 
+            print("MSG: ", msg)
             return msg
             
         except OSError as e:
@@ -105,11 +106,10 @@ class Client():
         try:
             msg = "{" + msg + "}"
             self.s.send(msg.encode('ascii'))
-            # time.sleep(.1) # Give time for msg to send
             return True
         except OSError as e:
             print("SEND: ", e)
             # Server is down
-            self.state = self.states[1]
+            # self.state = self.states[1]
             # self.reConnect()
             return False

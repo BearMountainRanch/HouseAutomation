@@ -17,48 +17,61 @@ class Main():
         self.led = Pin(self.LED_PIN, Pin.OUT)
         self.led.on()
         self.cli = Client()
-        # self.sendBuffer = []
-        # self.recvBuffer = []
+        self.sendBuffer = []
+        self.recvBuffer = []
 
     def loop(self) -> None:
         '''Main program loop'''
+        state = True
         while True:
             
             recvBuffer = self.recvBuffer
             for msg in recvBuffer:
                 if msg == config.msgs[0]:
-                    self.led.on()
+                    state = True
                 elif msg == config.msgs[1]:
-                    self.led.off()
+                    state = False
                 else:
-                    # Msg recvied does not match protocall
+                    print("HERE")
                     pass
+                    # Msg recvied does not match protocall
                 self.recvBuffer.remove(msg)
+
+            if state:
+                self.led.on()
+                sleep(1)
+                self.led.off()
+                sleep(1)
+            else:
+                self.led.off()
+                sleep(2)
+                self.led.on()
+                sleep(2)
 
     def socket(self) -> None:
         '''Main Socket Loop in Core1'''
         while True:
 
-            sleep(.5)
             # Check connection to Server
             self.cli.isConnected()
 
-            try:
-                self.cli.s.recv(1024)
-            except OSError as e:
-                print("RECVERROR: ", e)
-                pass
+            # try:
+            #     msg = self.cli.s.recv(1024)
+            #     print(msg)
+            # except OSError as e:
+            #     print("RECVERROR: ", e)
+            #     pass
 
-            # # Send data in the sendBuffer and clear msg from sendBuffer 
-            # sendBuffer = self.sendBuffer
-            # for msg in sendBuffer:
-            #     self.cli.send(msg)
-            #     self.sendBuffer.remove(msg)
+            # Send data in the sendBuffer and clear msg from sendBuffer 
+            sendBuffer = self.sendBuffer
+            for msg in sendBuffer:
+                self.cli.send(msg)
+                self.sendBuffer.remove(msg)
 
-            # # Recv data into the recvBuffer
-            # msg = self.cli.recieve()
-            # if len(msg) != 0:
-            #     self.recvBuffer.append(msg)
+            # Recv data into the recvBuffer
+            msg = self.cli.recieve()
+            if len(msg) != 0:
+                self.recvBuffer.append(msg)
 
     def connect(self) -> None:
         '''Connect to WLAN'''
@@ -88,10 +101,9 @@ class Main():
 if __name__ == "__main__":
     try:
         main = Main()
-        # _thread.start_new_thread(main.socket, ())
-        # main.loop()
+        _thread.start_new_thread(main.loop, ())
         main.socket()
     except KeyboardInterrupt:
-        main.cli.s.close()
+        main.cli.close()
         print("Socket closed succesfully")
         machine.reset()

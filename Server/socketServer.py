@@ -96,7 +96,6 @@ class Client():
         try:
             msg = "{" + msg + "}"
             self.conn.send(msg.encode('ascii'))
-            # time.sleep(.1) # Give time for msg to send
             return True
         except OSError as e:
             print(e)
