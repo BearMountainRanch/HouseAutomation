@@ -41,10 +41,8 @@ class Client():
     def isConnected(self) -> bool:
         '''Checks connection to Server and connects if not'''
         if self.send(""):
-            print("T")
             return True
         else:
-            print("F")
             self.reConnect()
             return False
 

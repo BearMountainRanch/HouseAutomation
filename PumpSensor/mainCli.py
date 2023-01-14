@@ -93,5 +93,5 @@ if __name__ == "__main__":
         main.socket()
     except KeyboardInterrupt:
         main.cli.s.close()
+        print("Socket closed succesfully")
         machine.reset()
-        print("Closed succesfully")
