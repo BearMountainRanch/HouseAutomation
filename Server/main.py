@@ -23,7 +23,7 @@ class Main():
         '''Main Socket Loop in Core1'''
         while True:
 
-            time.sleep(.3) # Allows the Pico to keep up
+            time.sleep(.5) # Allows the Pico to keep up
             # Check connection to Clients
             self.srv.accept()
             self.srv.isConnected()

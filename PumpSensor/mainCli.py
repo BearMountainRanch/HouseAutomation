@@ -22,31 +22,33 @@ class Main():
 
     def loop(self) -> None:
         '''Main program loop'''
-        state = True
-        while True:
-            
-            recvBuffer = self.recvBuffer
-            for msg in recvBuffer:
-                if msg == config.msgs[0]:
-                    state = True
-                elif msg == config.msgs[1]:
-                    state = False
-                else:
-                    print("HERE")
-                    pass
-                    # Msg recvied does not match protocall
-                self.recvBuffer.remove(msg)
+        try:
+            state = True
+            while True:
+                
+                recvBuffer = self.recvBuffer
+                for msg in recvBuffer:
+                    if msg == config.msgs[0]:
+                        state = True
+                    elif msg == config.msgs[1]:
+                        state = False
+                    else:
+                        pass
+                        # Msg recvied does not match protocall
+                    self.recvBuffer.remove(msg)
 
-            if state:
-                self.led.on()
-                sleep(1)
-                self.led.off()
-                sleep(1)
-            else:
-                self.led.off()
-                sleep(2)
-                self.led.on()
-                sleep(2)
+                if state:
+                    self.led.on()
+                    sleep(1)
+                    self.led.off()
+                    sleep(1)
+                else:
+                    self.led.off()
+                    sleep(2)
+                    self.led.on()
+                    sleep(2)
+        except OSError as e:
+            print("LOOP: ", e)
 
     def socket(self) -> None:
         '''Main Socket Loop in Core1'''

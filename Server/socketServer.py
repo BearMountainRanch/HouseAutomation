@@ -53,41 +53,59 @@ class Client():
         '''Constructor to initilize client'''
         self.conn = conn
         self.addr = addr
+        self.recvBuffer = ""
 
     def setName(self, name) -> None:
         '''Sets the name of the object'''
         self.name = name
 
+    def recv(self) -> None:
+        '''Transfer machine buffer to program buffer'''
+        try:
+            self.recvBuffer += self.conn.recv(1024).decode('ascii').replace("{}", "")
+            print("BUF: ", self.recvBuffer)
+        except OSError as e:
+            print("RECV: ", e)
+
+    def getRecvBuf(self, buf:int) -> str:
+        '''Return msg that is buf long'''
+        try:
+            msg = self.recvBuffer[:buf]
+            self.recvBuffer = self.recvBuffer[buf:]
+            return msg
+        except:
+            return ""
+
     def recieve(self) -> str:
         '''Recieve msg from given client and reuturn msg or None'''
-
+        self.recv()
         try:
-            val = self.conn.recv(1)
+            val = self.getRecvBuf(1)
 
             # Look for starting frame
             collectData = False
-            if val == b"{":
+            if val == "{":
                 collectData = True
             else:
                 # Starting frame expected and was not recieved
-                # self.logs.warning(self.LOC, "Data message corupted from beggining: {}".format(val))
-                return self.recieve()
+                return ""
 
             # Start to build message
             msg = ""
             while collectData:
-                byte = self.conn.recv(1).decode('ascii')
+                byte = self.getRecvBuf(1)
                 if byte == "}":
                     collectData = False
                 elif byte == "{":
-                    # self.logs.error(self.LOC, "Data message corupted during")
                     msg = ""
                 else:
                     msg += byte
-        
+
+            print("MSG: ", msg)
             return msg
             
-        except:
+        except OSError as e:
+            print(e)
             # self.logs.error(self.LOC, "Sensor Read Intrupt")
             return ""
 

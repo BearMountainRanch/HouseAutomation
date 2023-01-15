@@ -57,7 +57,7 @@ class Client():
             self.recvBuffer += self.s.recv(1024).decode('ascii').replace("{}", "")
             print("BUF: ", self.recvBuffer)
         except OSError as e:
-            print(e)
+            print("RECV: ", e)
 
     def getRecvBuf(self, buf:int) -> str:
         '''Return msg that is buf long'''
@@ -80,7 +80,6 @@ class Client():
                 collectData = True
             else:
                 # Starting frame expected and was not recieved
-                print("Nothing here")
                 return ""
 
             # Start to build message
